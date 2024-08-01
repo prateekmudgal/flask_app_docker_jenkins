@@ -1,5 +1,5 @@
 # flask_app_docker_jenkins_sonarqube
-# Dockerize the sample python application
+### Dockerize the sample python application
 
 Build the image using the following command
 
