@@ -2,9 +2,9 @@ pipeline {
     agent any
     
     stages {
-        stage('run and command'){
+        stage('Git Checkout'){
             steps{
-                 sh 'date'
+                 git branch: 'main', credentialsId: 'github', url: 'https://github.com/prateekmudgal/flask_app_docker_jenkins_sonarqube.git'
             }
         }
     }
