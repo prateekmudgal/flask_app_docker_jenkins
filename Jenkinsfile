@@ -7,7 +7,7 @@ pipeline {
                  git branch: 'main', credentialsId: 'github', url: 'https://github.com/prateekmudgal/flask_app_docker_jenkins_sonarqube.git'
            }
         }
-        stage("build & SonarQube analysis")steps {
+         stage("build & SonarQube analysis")steps {
               withSonarQubeEnv('My SonarQube Server') {
                 sh 'mvn clean package sonar:sonar'
               }
