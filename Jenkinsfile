@@ -2,9 +2,9 @@ pipeline {
     agent any
     
     stages {
-        stage('hello'){
+        stage('run and command'){
             steps{
-                echo 'my new pipeline'
+                 sh 'date'
             }
         }
     }
