@@ -17,7 +17,6 @@ pipeline {
                         sh "${scannerHome}/bin/sonar-scanner \
                             -Dsonar.projectKey='flask_app_docker_jenkins_sonarqube' \
                             -Dsonar.projectName= 'flask_app_docker_jenkins_sonarqube'\
-                            
                             -Dsonar.sources= ."
                     }
                 }
