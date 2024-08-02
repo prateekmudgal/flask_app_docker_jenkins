@@ -1,17 +1,26 @@
 pipeline {
     agent any
-
+    
     stages {
-        stage('Checkout Code') {
+        stage('Fetch Code') {
             steps {
-                // Checkout code from GitHub using credentials
-                git credentialsId: 'github-credentials-id',
-                    url: 'https://github.com/prateekmudgal/flask_app_docker_jenkins_sonarqube.git',
-                    branch: 'main'
+                git <https://github.com/prateekmudgal/flask_app_docker_jenkins_sonarqube.git>
+            }
+        }
+        stage('Code Analysis') {
+            environment {
+                scannerHome = tool 'Sonar'
+            }
+            steps {
+                script {
+                    withSonarQubeEnv('Sonar') {
+                        sh "${scannerHome}/bin/sonar-scanner \
+                            -Dsonar.projectKey=<flask_app_docker_jenkins_sonarqube> \
+                            -Dsonar.projectName=<flask_app_docker_jenkins_sonarqube> \
+                            -Dsonar.sources:"
                     }
-                  }
-       
-        
-        
+                }
+            }
+        }
     }
 }
