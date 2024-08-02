@@ -1,45 +1,25 @@
 pipeline {
     agent any
-
+    
     stages {
-        stage('Clone Repository') {
+        stage('Fetch Code') {
             steps {
-                git branch: 'main', url: 'https://github.com/prateekmudgal/flask_app_docker_jenkins_sonarqube.git'
+                git 'https://github.com/prateekmudgal/flask_app_docker_jenkins_sonarqube.git'
             }
         }
-
-        stage('Build Docker Image') {
-            steps {
-                script {
-                    // Build Docker Image
-                    sh 'docker build -t flask-app .'
-                }
-            }
-        }
-
-        stage('Run SonarQube Analysis') {
+        stage('Code Analysis') {
             environment {
-                scannerHome = tool 'SonarQube Scanner'
+                scannerHome = tool 'Sonar'
             }
             steps {
                 script {
-                    // Run SonarQube analysis
-                    withSonarQubeEnv('SonarQube') {
-                        sh "${scannerHome}/bin/sonar-scanner"
+                    withSonarQubeEnv('Sonar') {
+                        sh "${scannerHome}/bin/sonar-scanner \
+                            -Dsonar.projectKey='flask_app_docker_jenkins_sonarqube' \
+                            -Dsonar.projectName= 'flask_app_docker_jenkins_sonarqube'\
+                            
+                            -Dsonar.sources= ."
                     }
                 }
             }
         }
-
-        stage('Deploy Docker Container') {
-            steps {
-                script {
-                    // Run Docker Container
-                    sh 'docker run -d -p 5000:5000 flask-app'
-                }
-            }
-        }
-    }
-
-    
-}
