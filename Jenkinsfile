@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {     
-        DOCKERHUB_CREDENTIALS = credentials('prateek0912')     
+        DOCKERHUB_CREDENTIALS = credentials('eafdc5b6-6653-4c0b-b069-d05e5819220e')     
     } 
 
     stages {
