@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    environment {     
-        DOCKERHUB_CREDENTIALS = credentials('eafdc5b6-6653-4c0b-b069-d05e5819220e')     
-    } 
-
     stages {
         stage('Git Checkout') {
             steps {
@@ -23,8 +19,14 @@ pipeline {
             }
         }
 
-        
-
-       
+        stage('Docker Push') {
+            agent any
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerHub', passwordVariable: 'Prateek@9', usernameVariable: 'prateek0912')]) {
+                    sh "docker login -u ${dockerHubUser} -p ${dockerHubPassword}"
+                    sh 'docker push prateek0912/sample-python:latest'
+                }
+            }
+        }
     }
 }
