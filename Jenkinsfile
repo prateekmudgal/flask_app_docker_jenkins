@@ -23,24 +23,8 @@ pipeline {
             }
         }
 
-        stage('Login to Docker Hub') {
-            agent {
-                label 'dockerengine'
-            }
-            steps {       
-                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | sudo docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'                		
-                echo 'Login Completed'      
-            }           
-        }
+        
 
-        stage('Push Image to Docker Hub') {
-            agent {
-                label 'dockerengine'
-            }
-            steps {                            
-                sh 'sudo docker push prateek0912/sample-python:$BUILD_NUMBER'           
-                echo 'Push Image Completed'       
-            }            
-        }
+       
     }
 }
