@@ -4,14 +4,14 @@ pipeline {
     stages {
         stage('Git Checkout') {
             steps {
-                git branch: 'main', 
-                    credentialsId: 'github', 
+                git branch: 'main',
+                    credentialsId: 'github',
                     url: 'https://github.com/prateekmudgal/flask_app_docker_jenkins_sonarqube.git'
             }
         }
 
         stage('Docker Build') {
-            agent { 
+            agent {
                 label 'dockerengine'
             }
             steps {
@@ -30,8 +30,9 @@ pipeline {
                 }
             }
         }
+
         stage('Container Launch') {
-            agent { 
+            agent {
                 label 'dockerengine'
             }
             steps {
@@ -39,5 +40,18 @@ pipeline {
             }
         }
 
+        stage('Sonarqube') {
+            agent {
+                label 'dockerengine'
+            }
+            environment {
+                scannerHome = tool 'SonarQubeScanner'
+            }
+            steps {
+                withSonarQubeEnv('sonarqube') {
+                    sh "${scannerHome}/bin/sonar-scanner"
+                }
+            }
+        }
     }
 }
