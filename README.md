@@ -59,8 +59,12 @@ Before starting, ensure you have the following installed:
 #### Clone the Repository
 
 ```bash
+<<<<<<< HEAD
 git clone https://github.com/prateekmudgal/flask_app_docker_jenkins_sonarqube.git
 cd flask_app_docker_jenkins_sonarqube
+=======
+$ docker build -t prateek0912/sample-python:latest .
+>>>>>>> 831513bb9ba99015f241aa1a7d72f2523c411b30
 ```
 
 
@@ -75,8 +79,12 @@ While this project is primarily automated through Jenkins, you can perform manua
 ### Build Docker Image Manually
 
 ```bash
+<<<<<<< HEAD
 docker build -t prateek0912/sample-python:latest .
 
+=======
+$ docker run -d -p 7077:5000 prateek0912/sample-python
+>>>>>>> 831513bb9ba99015f241aa1a7d72f2523c411b30
 ```
 
 ### Run Docker Container Manually
