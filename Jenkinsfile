@@ -30,5 +30,14 @@ pipeline {
                 }
             }
         }
+        stage('Container Launch') {
+            agent { 
+                label 'dockerengine'
+            }
+            steps {
+                sh '$ docker run -d -p 7077:5000 simple-python'
+            }
+        }
+
     }
 }
