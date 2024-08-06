@@ -4,13 +4,13 @@
 Build the image using the following command
 
 ```bash
-$ docker build -t simple-flask-app:latest .
+$ docker build -t prateek0912/sample-python:latest .
 ```
 
 Run the Docker container using the command shown below.
 
 ```bash
-$ docker run -d -p 7077:5000 simple-flask-app
+$ docker run -d -p 7077:5000 prateek0912/sample-python
 ```
 
 The application will be accessible at the ip `http://<host_ip>:5000`
