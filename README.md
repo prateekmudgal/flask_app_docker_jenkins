@@ -16,6 +16,7 @@ This repository contains a sample Flask application that is fully Dockerized and
     - [Prerequisites](#prerequisites)
     - [Installation](#installation)
       - [Clone the Repository](#clone-the-repository)
+  - [Dockerfile](#dockerfile)
   - [Manual Docker Operations](#manual-docker-operations)
     - [Build Docker Image Manually](#build-docker-image-manually)
     - [Run Docker Container Manually](#run-docker-container-manually)
@@ -40,8 +41,6 @@ The objective of this project is to showcase the integration of Jenkins, Docker,
 - **Jenkins Master-Slave Architecture**: Distributed build environment with Jenkins agents.
 - **Manual Docker Operations**: Option to manually build and run Docker containers.
 
-
-
 ## Setup and Installation
 
 ### Prerequisites
@@ -61,13 +60,40 @@ Before starting, ensure you have the following installed:
 ```bash
 git clone https://github.com/prateekmudgal/flask_app_docker_jenkins_sonarqube.git
 cd flask_app_docker_jenkins_sonarqube
-$ docker build -t prateek0912/sample-python:latest .
+docker build -t prateek0912/sample-python:latest .
 ```
-
 
 - **Access the Application**
 
   Open your browser and navigate to `http://localhost:7077` to see the Flask application in action.
+
+## Dockerfile
+
+The Dockerfile for this project is designed to create a lightweight and efficient Docker image for the Flask application. Below is the content of the Dockerfile used:
+
+```dockerfile
+FROM python:3.6
+
+MAINTAINER Prateek Mudgal "mudgalprateek00@gmail.com"
+
+COPY . /app
+WORKDIR /app
+
+RUN pip install -r requirements.txt
+
+ENTRYPOINT ["python"]
+CMD ["app.py"]
+```
+
+### Explanation
+
+- **FROM python:3.6**: Specifies the base image, which is Python version 3.6.
+- **MAINTAINER Prateek Mudgal**: Specifies the maintainer of the Docker image.
+- **COPY . /app**: Copies the entire current directory (`.`) to the `/app` directory in the Docker image.
+- **WORKDIR /app**: Sets the working directory inside the Docker image to `/app`.
+- **RUN pip install -r requirements.txt**: Installs the required Python packages specified in the `requirements.txt` file.
+- **ENTRYPOINT ["python"]**: Sets the entry point for the Docker container to run Python.
+- **CMD ["app.py"]**: Specifies the default command to run when the container starts, which is executing `app.py`.
 
 ## Manual Docker Operations
 
@@ -77,7 +103,6 @@ While this project is primarily automated through Jenkins, you can perform manua
 
 ```bash
 docker build -t prateek0912/sample-python:latest .
-
 ```
 
 ### Run Docker Container Manually
@@ -166,35 +191,47 @@ pipeline {
 
 - **Stage 1: Git Checkout**
   - **Purpose**: Fetches the latest code from the GitHub repository.
-  - **Action**: 
+  - **Action**:
     - Clones the `main` branch using the specified GitHub credentials.
     - Ensures that the latest code is always used for the build process.
 
 - **Stage 2: SonarQube Analysis**
   - **Purpose**: Performs static code analysis using SonarQube.
-  - **Action**: 
+  - **Action**:
     - Uses `sonar-scanner` to analyze the code.
     - Configured with a project key (`my_project`) and SonarQube server URL.
     - Provides feedback on code quality and vulnerabilities.
-  
+
 - **Stage 3: Docker Build**
   - **Purpose**: Builds the Docker image for the Flask application.
   - **Agent**: Executes on the Jenkins Agent node labeled `dockerengine`.
-  - **Action**: 
+  - **Action**:
     - Runs `docker build` to create the Docker image.
     - Tags the image as `prateek0912/sample-python:latest`.
 
 - **Stage 4: Docker Push**
   - **Purpose**: Pushes the Docker image to Docker Hub.
   - **Agent**: Executes on the Jenkins Agent node labeled `dockerengine`.
-  - **Action**: 
+  - **Action**:
     - Authenticates with Docker Hub using Jenkins credentials.
     - Pushes the image to the repository `prateek0912/sample-python`.
 
 - **Stage 5: Container Launch**
   - **Purpose**: Launches the Flask application in a Docker container.
   - **Agent**: Executes on the Jenkins Agent node labeled `dockerengine`.
-  - **Action**: 
+  - **Action**:
     - Runs `docker run` to start the container.
     - Maps port `7077` on the host to port `5000` in the container.
+
+---
+# Thank You
+
+I hope you find it useful. If you have any doubt in any of the step then feel free to contact me. If you find any issue in it then let me know.
+
+<table>
+  <tr>
+    <th><a href="https://www.linkedin.com/in/prateek-mudgal-devops" target="_blank"><img src="https://img.icons8.com/color/452/linkedin.png" alt="linkedin" width="30"/></a></th>
+    <th><a href="mailto:mudgalprateek00@gmail.com" target="_blank"><img src="https://img.icons8.com/color/344/gmail-new.png" alt="Mail" width="30"/></a></th>
+  </tr>
+</table>
 
