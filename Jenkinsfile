@@ -15,7 +15,7 @@ pipeline {
                 label 'dockerengine'
             }
             steps {
-                sh 'docker build -t simple-flask-app:latest .'
+                sh 'docker build -t prateek0912/sample-python:latest .'
             }
         }
 
