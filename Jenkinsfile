@@ -10,6 +10,17 @@ pipeline {
             }
         }
 
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('SonarQubeScanner') {
+                    sh 'sonar-scanner \
+                       -Dsonar.projectKey=my_project \
+                       -Dsonar.sources=. \
+                       -Dsonar.host.url=http://3.20.232.183:9990'
+                }
+            }
+        }
+
         stage('Docker Build') {
             agent {
                 label 'dockerengine'
@@ -37,20 +48,6 @@ pipeline {
             }
             steps {
                 sh 'docker run -d -p 7077:5000 prateek0912/sample-python'
-            }
-        }
-
-        stage('Sonarqube') {
-            agent {
-                label 'dockerengine'
-            }
-            environment {
-                scannerHome = tool 'SonarQubeScanner'
-            }
-            steps {
-                withSonarQubeEnv('sonarqube') {
-                    sh "${scannerHome}/bin/sonar-scanner"
-                }
             }
         }
     }
