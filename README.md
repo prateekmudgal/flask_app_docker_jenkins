@@ -2,13 +2,13 @@
 
 ---
 
-# Flask App Dockerized with Jenkins and SonarQube
+# Flask App Dockerized with Jenkins
 
-This repository contains a sample Flask application that is fully Dockerized and integrated with Jenkins for automated CI/CD pipelines. Additionally, it uses SonarQube for static code analysis, ensuring code quality and maintainability. This project also demonstrates a Jenkins master-slave architecture where all stages are executed on the agent node.
+This repository contains a sample Flask application that is fully Dockerized and integrated with Jenkins for automated CI/CD pipelines. This project also demonstrates a Jenkins master-slave architecture where all stages are executed on the agent node.
 
 ## Table of Contents
 
-- [Flask App Dockerized with Jenkins and SonarQube](#flask-app-dockerized-with-jenkins-and-sonarqube)
+- [Flask App Dockerized with Jenkins](#flask-app-dockerized-with-jenkins)
   - [Table of Contents](#table-of-contents)
   - [Project Overview](#project-overview)
   - [Features](#features)
@@ -17,29 +17,35 @@ This repository contains a sample Flask application that is fully Dockerized and
     - [Installation](#installation)
       - [Clone the Repository](#clone-the-repository)
   - [Dockerfile](#dockerfile)
+    - [Explanation](#explanation)
   - [Manual Docker Operations](#manual-docker-operations)
     - [Build Docker Image Manually](#build-docker-image-manually)
     - [Run Docker Container Manually](#run-docker-container-manually)
+  - [Running Jenkins Agent as a Service](#running-jenkins-agent-as-a-service)
+    - [Instructions](#instructions)
   - [Jenkins Pipeline](#jenkins-pipeline)
+    - [Adding a Docker Build Job in Jenkins](#adding-a-docker-build-job-in-jenkins)
     - [Jenkins Master-Slave Architecture](#jenkins-master-slave-architecture)
     - [Pipeline Stages](#pipeline-stages)
       - [Jenkinsfile Configuration](#jenkinsfile-configuration)
-    - [Stage Descriptions](#stage-descriptions)
+      - [Stage Descriptions](#stage-descriptions)
+  - [Conclusion](#conclusion)
 
 ## Project Overview
 
-This Proof of Concept (POC) demonstrates the deployment of a sample Flask application using Docker containers. The application leverages Jenkins for Continuous Integration and Continuous Deployment (CI/CD), with SonarQube integrated for continuous code quality analysis.
+This Proof of Concept (POC) demonstrates the deployment of a sample Flask application using Docker containers. The application leverages Jenkins for Continuous Integration and Continuous Deployment (CI/CD).
 
-The objective of this project is to showcase the integration of Jenkins, Docker, and SonarQube, and how they can be used together to automate the build, test, and deployment processes.
+The objective of this project is to showcase the integration of Jenkins and Docker, and how they can be used together to automate the build, test, and deployment processes.
 
 ## Features
 
 - **Flask Application**: A basic web application built with Flask.
 - **Dockerized Environment**: Containerization of the Flask app using Docker.
 - **Jenkins Integration**: Automated CI/CD pipeline utilizing Jenkins.
-- **SonarQube Analysis**: Integration with SonarQube for static code analysis.
 - **Jenkins Master-Slave Architecture**: Distributed build environment with Jenkins agents.
 - **Manual Docker Operations**: Option to manually build and run Docker containers.
+- **Running Jenkins Agent as a Service**: Ensures the Jenkins agent node remains online even if the instance restarts.
+- **Docker Build Job in Jenkins**: Automates Docker image creation within Jenkins.
 
 ## Setup and Installation
 
@@ -50,7 +56,6 @@ Before starting, ensure you have the following installed:
 - **Docker**: [Installation Guide](https://docs.docker.com/get-docker/)
 - **Docker Compose**: [Installation Guide](https://docs.docker.com/compose/install/)
 - **Jenkins**: [Installation Guide](https://www.jenkins.io/doc/book/installing/)
-- **SonarQube**: [Installation Guide](https://docs.sonarqube.org/latest/setup/get-started-2-minutes/)
 - **Git**: [Installation Guide](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 
 ### Installation
@@ -111,9 +116,70 @@ docker build -t prateek0912/sample-python:latest .
 docker run -d -p 7077:5000 prateek0912/sample-python
 ```
 
+## Running Jenkins Agent as a Service
+
+To ensure that the Jenkins agent (node) remains online even if the instance restarts or shuts down, you can run the Jenkins agent as a service using the following script. This script configures the Jenkins agent to automatically restart if it goes down.
+
+Create a file named `node_script.sh` in the repository with the following configuration:
+
+```bash
+[Unit]
+Description=Jenkins Agent
+
+[Service]
+User=ubuntu
+WorkingDirectory=/home/ubuntu
+ExecStart=/usr/bin/java -jar /home/ubuntu/agent.jar -url http://3.15.9.194:8080/ -secret 7acc512dbb34dec0e7d5641ad8a725dd226cc220e8bbefc51150996d91804d94 -name dockerengine -workDir "/home/ubuntu"
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+```
+
+### Instructions
+
+1. **Create the Script**: Add the above script to your repository.
+2. **Install the Service**:
+   - Copy the script to the `/etc/systemd/system/` directory.
+   - Enable the service to start on boot with the following commands:
+   
+   ```bash
+   sudo systemctl daemon-reload
+   sudo systemctl enable node_script.sh
+   sudo systemctl start node_script.sh
+   ```
+3. **Monitor the Service**: Ensure that the Jenkins agent service is running with the following command:
+   
+   ```bash
+   sudo systemctl status node_script.sh
+   ```
+
+This configuration ensures that the Jenkins agent is always online and ready to execute pipeline stages, even if the instance restarts.
+
 ## Jenkins Pipeline
 
-The Jenkins pipeline automates the entire build and deployment process. It is designed to pull the latest code from GitHub, analyze it using SonarQube, build a Docker image, push it to Docker Hub, and finally launch the application in a Docker container.
+The Jenkins pipeline automates the entire build and deployment process. It is designed to pull the latest code from GitHub, build a Docker image, push it to Docker Hub, and finally launch the application in a Docker container.
+
+### Adding a Docker Build Job in Jenkins
+
+To automate the Docker image creation within Jenkins, follow these steps to set up a Docker build job:
+
+1. **Access Jenkins Dashboard**: Log in to your Jenkins dashboard.
+2. **Create a New Job**:
+   - Click on "New Item" on the Jenkins dashboard.
+   - Enter a name for your job, e.g., `flask-docker-build`.
+   - Select "Pipeline" as the project type and click "OK."
+3. **Configure the Job**:
+   - In the "Pipeline" section, select "Pipeline script from SCM."
+   - Choose "Git" as the SCM and provide the repository URL: `https://github.com/prateekmudgal/flask_app_docker_jenkins_sonarqube.git`.
+   - Set the branch to `main` or any specific branch you want to track.
+   - Ensure the "Jenkinsfile" path is correct (it should be at the root of the repository).
+4. **Add Build Trigger**:
+   - Optionally, you can set up a trigger under "Build Triggers" to automatically start the job when changes are detected in the repository.
+5. **Save and Run the Job**:
+   - Save the configuration and manually trigger the job by clicking "Build Now."
+   - Monitor the console output to verify the Docker image is built successfully.
 
 ### Jenkins Master-Slave Architecture
 
@@ -143,17 +209,6 @@ pipeline {
             }
         }
 
-        stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv('SonarQubeScanner') {
-                    sh 'sonar-scanner \
-                       -Dsonar.projectKey=my_project \
-                       -Dsonar.sources=. \
-                       -Dsonar.host.url=http://3.20.232.183:9990'
-                }
-            }
-        }
-
         stage('Docker Build') {
             agent {
                 label 'dockerengine'
@@ -169,7 +224,9 @@ pipeline {
             }
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'DOCKER_PASS', usernameVariable: 'DOCKER_USERNAME')]) {
-                    sh "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASS}"
+                    sh "docker login -u ${DOCKER_USERNAME
+
+} -p ${DOCKER_PASS}"
                     sh 'docker push prateek0912/sample-python:latest'
                 }
             }
@@ -180,58 +237,42 @@ pipeline {
                 label 'dockerengine'
             }
             steps {
-                sh 'docker run -d -p 7077:5000 prateek0912/sample-python'
+                sh 'docker run -d -p 7077:5000 prateek0912/sample-python:latest'
             }
         }
     }
 }
 ```
 
-### Stage Descriptions
+#### Stage Descriptions
 
-- **Stage 1: Git Checkout**
-  - **Purpose**: Fetches the latest code from the GitHub repository.
-  - **Action**:
-    - Clones the `main` branch using the specified GitHub credentials.
-    - Ensures that the latest code is always used for the build process.
+- **Git Checkout**
+  - **Purpose**: Clones the latest code from the GitHub repository.
+  - **Agent**: Executes on the Jenkins master node.
+  - **Action**: Clones the repository and checks out the `main` branch.
 
-- **Stage 2: SonarQube Analysis**
-  - **Purpose**: Performs static code analysis using SonarQube.
-  - **Action**:
-    - Uses `sonar-scanner` to analyze the code.
-    - Configured with a project key (`my_project`) and SonarQube server URL.
-    - Provides feedback on code quality and vulnerabilities.
-
-- **Stage 3: Docker Build**
+- **Docker Build**
   - **Purpose**: Builds the Docker image for the Flask application.
   - **Agent**: Executes on the Jenkins Agent node labeled `dockerengine`.
-  - **Action**:
-    - Runs `docker build` to create the Docker image.
-    - Tags the image as `prateek0912/sample-python:latest`.
+  - **Action**: Runs `docker build` to create the Docker image tagged as `prateek0912/sample-python:latest`.
 
-- **Stage 4: Docker Push**
-  - **Purpose**: Pushes the Docker image to Docker Hub.
+- **Docker Push**
+  - **Purpose**: Pushes the built Docker image to Docker Hub.
   - **Agent**: Executes on the Jenkins Agent node labeled `dockerengine`.
   - **Action**:
-    - Authenticates with Docker Hub using Jenkins credentials.
-    - Pushes the image to the repository `prateek0912/sample-python`.
+    - Logs into Docker Hub using provided credentials.
+    - Pushes the Docker image `prateek0912/sample-python:latest` to Docker Hub.
 
-- **Stage 5: Container Launch**
-  - **Purpose**: Launches the Flask application in a Docker container.
+- **Container Launch**
+  - **Purpose**: Launches the Docker container with the Flask application.
   - **Agent**: Executes on the Jenkins Agent node labeled `dockerengine`.
   - **Action**:
-    - Runs `docker run` to start the container.
-    - Maps port `7077` on the host to port `5000` in the container.
+    - Runs `docker run` to launch the container, mapping the host port `7077` to the container port `5000`.
+
+## Conclusion
+
+This project successfully demonstrates a fully automated CI/CD pipeline using Jenkins and Docker. By configuring the Jenkins agent as a service, it ensures continuous availability and resilience, even in the event of system restarts. Additionally, by incorporating the Docker build job directly into Jenkins, the process is streamlined, making deployment more efficient and less prone to errors.
 
 ---
-# Thank You
 
-I hope you find it useful. If you have any doubt in any of the step then feel free to contact me. If you find any issue in it then let me know.
-
-<table>
-  <tr>
-    <th><a href="https://www.linkedin.com/in/prateek-mudgal-devops" target="_blank"><img src="https://img.icons8.com/color/452/linkedin.png" alt="linkedin" width="30"/></a></th>
-    <th><a href="mailto:mudgalprateek00@gmail.com" target="_blank"><img src="https://img.icons8.com/color/344/gmail-new.png" alt="Mail" width="30"/></a></th>
-  </tr>
-</table>
-
+This revised README now includes details on setting up a Docker build job in Jenkins, as well as the previous addition of running the Jenkins agent as a service. The document provides a comprehensive guide to setting up the project and automating the build and deployment processes.
