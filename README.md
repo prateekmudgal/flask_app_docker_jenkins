@@ -267,7 +267,12 @@ pipeline {
   - **Purpose**: Launches the Docker container with the Flask application.
   - **Agent**: Executes on the Jenkins Agent node labeled `dockerengine`.
   - **Action**:
-    - Runs `docker run` to launch the container, mapping the host port `7077` to the container port `5000`.
+    - Runs `docker run` to launch the container, mapping the host port `7077` to the container port `5000`.![Screenshot (248)](https://github.com/user-attachments/assets/a4ad840d-87f7-4e74-91be-c8b07a264a1e)
+
+    - ![image](https://github.com/user-attachments/assets/06fd2c95-0888-4bc2-871e-2d90106e8ae8)
+
+    - 
+      
 
 ## Conclusion
 
