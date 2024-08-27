@@ -280,4 +280,3 @@ This project successfully demonstrates a fully automated CI/CD pipeline using Je
 
 ---
 
-This revised README now includes details on setting up a Docker build job in Jenkins, as well as the previous addition of running the Jenkins agent as a service. The document provides a comprehensive guide to setting up the project and automating the build and deployment processes.
