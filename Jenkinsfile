@@ -1,7 +1,7 @@
 pipeline {
-    agent any
-
-    
+    agent {
+        label "application"
+    }
 
     stages {
         stage('Git Checkout') {
@@ -12,11 +12,9 @@ pipeline {
             }
         }
 
-        
-
         stage('Docker Build') {
             agent {
-                label 'dockerengine'
+                label "application"
             }
             steps {
                 sh 'docker build -t prateek0912/sample-python:latest .'
@@ -25,7 +23,7 @@ pipeline {
 
         stage('Docker Push') {
             agent {
-                label 'dockerengine'
+                label "application"
             }
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'DOCKER_PASS', usernameVariable: 'DOCKER_USERNAME')]) {
@@ -37,7 +35,7 @@ pipeline {
 
         stage('Container Launch') {
             agent {
-                label 'dockerengine'
+                label "application"
             }
             steps {
                 sh 'docker run -d -p 7077:5000 prateek0912/sample-python'
