@@ -27,7 +27,7 @@ pipeline {
             }
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'DOCKER_PASS', usernameVariable: 'DOCKER_USERNAME')]) {
-                    sh "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASS}"
+                    sh "docker login -u ${DOCKER_USERNAME} --password-stdin"
                     sh 'sudo docker push prateek0912/oriserve:latest'
                 }
             }
