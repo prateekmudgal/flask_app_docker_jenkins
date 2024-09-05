@@ -17,7 +17,7 @@ pipeline {
                 label "application"
             }
             steps {
-                sh 'docker build -t prateek0912/sample-python:latest .'
+                sh 'docker build -t prateek0912/oriserve:latest .'
             }
         }
 
@@ -28,7 +28,7 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'DOCKER_PASS', usernameVariable: 'DOCKER_USERNAME')]) {
                     sh "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASS}"
-                    sh 'docker push prateek0912/sample-python:latest'
+                    sh 'docker push prateek0912/oriserve:latest'
                 }
             }
         }
@@ -38,7 +38,7 @@ pipeline {
                 label "application"
             }
             steps {
-                sh 'docker run -d -p 7077:5000 prateek0912/sample-python'
+                sh 'docker run -d -p 7077:5000 prateek0912/oriserve'
             }
         }
     }
